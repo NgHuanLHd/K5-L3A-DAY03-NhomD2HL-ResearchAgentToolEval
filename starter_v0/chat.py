@@ -23,6 +23,24 @@ def now_iso() -> str:
     return datetime.now().isoformat(timespec="seconds")
 
 
+VI_WEEKDAYS = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"]
+
+
+def with_runtime_context(system_prompt: str, now: datetime | None = None) -> str:
+    """Append today's date for live chat (the model has no clock and guesses its training year).
+
+    Only used by chat.py and app.py. run_eval.py keeps the artifact prompt unchanged so
+    eval runs stay reproducible and prompt_hash still matches artifacts/system_prompt.md.
+    """
+    now = now or datetime.now()
+    return (
+        f"{system_prompt.rstrip()}\n\n"
+        f"Runtime context: today is {VI_WEEKDAYS[now.weekday()]}, {now:%d/%m/%Y} "
+        f"(ISO {now:%Y-%m-%d}, local time {now:%H:%M}). Use this date for 'hôm nay', "
+        "'tuần này', relative dates and date arithmetic; never assume another year.\n"
+    )
+
+
 def safe_slug(value: str) -> str:
     slug = re.sub(r"[^A-Za-z0-9_.-]+", "_", value.strip())
     return slug.strip("_") or "run"
@@ -208,7 +226,7 @@ def main() -> None:
 
         turn_index += 1
         messages = [
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": with_runtime_context(system_prompt)},
             *trim_history(history, args.history_window),
             {"role": "user", "content": user_text},
         ]

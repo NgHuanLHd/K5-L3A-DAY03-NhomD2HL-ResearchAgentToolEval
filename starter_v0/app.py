@@ -28,6 +28,7 @@ from chat import (  # noqa: E402  (after stdout fix)
     run_model_tool_loop,
     safe_slug,
     trim_history,
+    with_runtime_context,
     write_transcript,
 )
 from providers import make_provider  # noqa: E402
@@ -35,7 +36,7 @@ from tools import load_tool_declarations, to_openai_tools  # noqa: E402
 from versioning import artifact_version_dict, build_artifact_version  # noqa: E402
 
 PROVIDER = "openrouter"
-VERSION_LABEL = "v4"
+VERSION_LABEL = "v5"
 HISTORY_WINDOW = 5
 MAX_TOOL_ROUNDS = 4
 SYSTEM_PROMPT_PATH = ARTIFACTS_DIR / "system_prompt.md"
@@ -123,7 +124,7 @@ def render_tool_events(events: list[dict[str, Any]]) -> None:
 
 def run_turn(cfg: dict[str, Any], user_text: str) -> dict[str, Any]:
     messages = [
-        {"role": "system", "content": cfg["system_prompt"]},
+        {"role": "system", "content": with_runtime_context(cfg["system_prompt"])},
         *trim_history(st.session_state.history, HISTORY_WINDOW),
         {"role": "user", "content": user_text},
     ]
