@@ -20,6 +20,7 @@ from .lookup.tool import web_search
 from .tool_new.tool import dedupe_items
 from .wiki.tool import wiki_summary
 from .topk.tool import keep_topk
+from .source_check.tool import check_sources
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -41,6 +42,7 @@ TOOL_FUNCTIONS = {
     "tool_new": dedupe_items,
     "wiki": wiki_summary,
     "topk": keep_topk,
+    "source_check": check_sources,
 }
 
 

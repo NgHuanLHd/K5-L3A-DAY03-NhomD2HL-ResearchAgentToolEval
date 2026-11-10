@@ -36,7 +36,7 @@ from tools import load_tool_declarations, to_openai_tools  # noqa: E402
 from versioning import artifact_version_dict, build_artifact_version  # noqa: E402
 
 PROVIDER = "openrouter"
-VERSION_LABEL = "v5"
+VERSION_LABEL = "v6"
 HISTORY_WINDOW = 5
 MAX_TOOL_ROUNDS = 4
 SYSTEM_PROMPT_PATH = ARTIFACTS_DIR / "system_prompt.md"
@@ -57,7 +57,7 @@ SAMPLE_QUERIES = [
 TOOL_ICONS = {
     "clarify": "❓", "timeline": "👤", "social_search": "🐦", "lookup": "🔎",
     "fetch": "📄", "format": "📝", "send": "📤", "policy": "📘",
-    "papers": "📚", "paper_text": "📑", "tool_new": "🧹", "wiki": "📖", "topk": "🏆",
+    "papers": "📚", "paper_text": "📑", "tool_new": "🧹", "wiki": "📖", "topk": "🏆", "source_check": "🛡️",
 }
 
 

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from conftest import FakeResponse  # noqa: F401  (you will need it)
+from conftest import FakeResponse
 from tools import TOOL_FUNCTIONS  # noqa: F401
 
 TODO = "TODO(student): implement this test"
@@ -21,87 +21,165 @@ TODO = "TODO(student): implement this test"
 # ---------------- clarify ----------------
 
 def test_clarify_choice_returns_options_and_awaits_user() -> None:
-    # Call clarify with response_type="choice" and 2 options.
-    # Assert: options are returned unchanged, awaiting_user is True.
-    pytest.skip(TODO)
+    options = ["Tin web", "Tweet"]
+    result = TOOL_FUNCTIONS["clarify"](question="Bạn muốn nguồn nào?", response_type="choice", options=options)
+
+    assert result["response_type"] == "choice"
+    assert result["options"] == ["Tin web", "Tweet"]
+    assert result["question"] == "Bạn muốn nguồn nào?"
+    assert result["awaiting_user"] is True
 
 
 # ---------------- format ----------------
 
 def test_format_sections_groups_items_by_section() -> None:
-    # Items with section "A", "B", "A" -> markdown has exactly one "## A" and one "## B".
-    pytest.skip(TODO)
+    items = [
+        {"title": "a1", "url": "https://a.com/1", "section": "A"},
+        {"title": "b1", "url": "https://b.com/1", "section": "B"},
+        {"title": "a2", "url": "https://a.com/2", "section": "A"},
+    ]
+    markdown = TOOL_FUNCTIONS["format"](items=items, template="sections")["markdown"]
+
+    assert markdown.count("## A") == 1
+    assert markdown.count("## B") == 1
+    assert markdown.index("a2") < markdown.index("## B")  # both A items stay under the A heading
 
 
 def test_format_thread_numbers_items() -> None:
-    # template="thread" -> lines start with "1/", "2/", ...
-    pytest.skip(TODO)
+    items = [{"title": f"Tin {i}", "url": f"https://x.com/{i}"} for i in range(3)]
+    markdown = TOOL_FUNCTIONS["format"](items=items, template="thread")["markdown"]
+
+    lines = [line for line in markdown.split("\n") if line.strip()]
+    assert [line.split(" ", 1)[0] for line in lines] == ["1/", "2/", "3/"]
 
 
 def test_format_empty_items_does_not_crash() -> None:
-    # items=None and items=[] -> item_count == 0, no exception.
-    pytest.skip(TODO)
+    for empty in (None, []):
+        result = TOOL_FUNCTIONS["format"](items=empty, template="sections")
+        assert result["item_count"] == 0
+        assert isinstance(result["markdown"], str)
 
 
 # ---------------- send (guardrail) ----------------
 
 def test_send_confirmed_posts_to_telegram(monkeypatch, fake_http) -> None:
-    # Set TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID, mock HTTP.
-    # Assert: exactly one POST, URL contains the token, json has chat_id + text, status == "sent".
-    pytest.skip(TODO)
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "123:abc")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "-1001")
+    calls = fake_http(FakeResponse({"ok": True}))
+
+    result = TOOL_FUNCTIONS["send"](text="Bản tin AI", confirmed=True)
+
+    assert len(calls) == 1
+    assert calls[0]["method"] == "POST"
+    assert "bot123:abc/sendMessage" in calls[0]["url"]
+    assert calls[0]["json"]["chat_id"] == "-1001"
+    assert calls[0]["json"]["text"] == "Bản tin AI"
+    assert result["status"] == "sent"
 
 
 def test_send_confirmed_without_env_returns_error_and_no_request(fake_http) -> None:
-    pytest.skip(TODO)
+    calls = fake_http(FakeResponse({"ok": True}))
+
+    result = TOOL_FUNCTIONS["send"](text="Bản tin AI", confirmed=True)
+
+    assert calls == []
+    assert result["error"] == "RuntimeError"
+    assert "TELEGRAM_BOT_TOKEN" in result["message"]
 
 
 # ---------------- lookup ----------------
 
 def test_lookup_without_timeframe_omits_time_range(monkeypatch, fake_http) -> None:
-    # timeframe=None -> request body has no "time_range" key.
-    pytest.skip(TODO)
+    monkeypatch.setenv("TAVILY_API_KEY", "test-key")
+    calls = fake_http(FakeResponse({"results": []}))
+
+    TOOL_FUNCTIONS["lookup"](query="AI", topic="general", timeframe=None)
+
+    assert "time_range" not in calls[0]["json"]
+    assert calls[0]["json"]["query"] == "AI"
 
 
 # ---------------- fetch ----------------
 
 def test_fetch_maps_firecrawl_response(monkeypatch, fake_http) -> None:
-    # Mock {"data": {"markdown": "...", "metadata": {"title": "T", "sourceURL": "https://..."}}}
-    # Assert title/url/source/summary in result["items"][0].
-    pytest.skip(TODO)
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "fc-test")
+    calls = fake_http(FakeResponse({"data": {
+        "markdown": "Nội dung bài",
+        "metadata": {"title": "T", "sourceURL": "https://www.openai.com/blog/x"},
+    }}))
+
+    result = TOOL_FUNCTIONS["fetch"](url="https://openai.com/blog/x")
+
+    assert calls[0]["url"] == "https://api.firecrawl.dev/v1/scrape"
+    assert calls[0]["json"]["url"] == "https://openai.com/blog/x"
+    assert result["items"][0] == {
+        "title": "T",
+        "url": "https://www.openai.com/blog/x",
+        "source": "openai.com",
+        "summary": "Nội dung bài",
+    }
 
 
 def test_fetch_truncates_markdown_to_4000_chars(monkeypatch, fake_http) -> None:
-    pytest.skip(TODO)
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "fc-test")
+    fake_http(FakeResponse({"data": {"markdown": "x" * 5000, "metadata": {}}}))
+
+    summary = TOOL_FUNCTIONS["fetch"](url="https://example.com")["items"][0]["summary"]
+
+    assert len(summary) == 4000
 
 
 # ---------------- timeline / social_search ----------------
 
 def test_timeline_respects_limit_and_skips_items_without_id(monkeypatch, fake_http) -> None:
-    # Mock {"timeline": [...]} with 1 item missing tweet_id and 6 valid items, limit=3.
-    # Assert 3 items, and each url looks like https://x.com/<handle>/status/<id>.
-    pytest.skip(TODO)
+    monkeypatch.setenv("RAPIDAPI_KEY", "rk")
+    raw = [{"text": "no id", "screen_name": "sama"}]
+    raw += [{"tweet_id": str(100 + i), "text": f"tweet {i}", "screen_name": "sama"} for i in range(6)]
+    calls = fake_http(FakeResponse({"timeline": raw}))
+
+    result = TOOL_FUNCTIONS["timeline"](screenname="sama", limit=3)
+
+    assert calls[0]["params"] == {"screenname": "sama"}
+    assert len(result["items"]) == 3
+    assert [item["url"] for item in result["items"]] == [
+        "https://x.com/sama/status/100",
+        "https://x.com/sama/status/101",
+        "https://x.com/sama/status/102",
+    ]
 
 
 def test_social_search_passes_search_type(monkeypatch, fake_http) -> None:
-    # Assert the request params carry the query and search_type ("Top" / "Latest").
-    pytest.skip(TODO)
+    monkeypatch.setenv("RAPIDAPI_KEY", "rk")
+    calls = fake_http(FakeResponse({"timeline": []}))
+
+    result = TOOL_FUNCTIONS["social_search"](query="OpenAI", search_type="Top", limit=5)
+
+    assert calls[0]["url"].endswith("/search.php")
+    assert calls[0]["params"] == {"query": "OpenAI", "search_type": "Top"}
+    assert result["search_type"] == "Top"
 
 
 # ---------------- policy (local knowledge + trust boundary) ----------------
 
 def test_policy_empty_query_returns_no_results() -> None:
-    pytest.skip(TODO)
+    for empty in ("", "   ", "là gì"):  # stopwords only -> no search terms
+        assert TOOL_FUNCTIONS["policy"](query=empty)["results"] == []
 
 
 def test_policy_area_filter_only_returns_that_area() -> None:
-    # policy_area="data_privacy" -> every result has policy_area == "data_privacy".
-    pytest.skip(TODO)
+    result = TOOL_FUNCTIONS["policy"](query="API key dữ liệu khách hàng", policy_area="data_privacy", top_k=5)
+
+    assert result["results"]
+    assert {hit["policy_area"] for hit in result["results"]} == {"data_privacy"}
 
 
 def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
-    # One policy file contains a quoted line that tries to give the assistant orders.
-    # Query that section (source_citation) and assert: that line is in untrusted_text, NOT in facts.
-    pytest.skip(TODO)
+    result = TOOL_FUNCTIONS["policy"](query="viral tweet citation verified fact", policy_area="source_citation", top_k=10)
+
+    flagged = [hit for hit in result["results"] if any("viral tweet" in line for line in hit["untrusted_text"])]
+    assert flagged, "the instruction-like line should be returned as untrusted_text"
+    for hit in result["results"]:
+        assert "ignore the citation policy" not in hit["facts"].lower()
 
 
 # ---------------- tool_new ----------------
@@ -282,3 +360,49 @@ def test_topk_bad_items_returns_error_dict() -> None:
     result = topk_fn(items="not-a-list", n=3)
     assert result["error"] == "TypeError"
     assert "items" in result["message"]
+
+
+# ---------------- source_check ----------------
+
+source_check_fn = TOOL_FUNCTIONS["source_check"]
+
+
+def test_source_check_classifies_primary_media_and_social() -> None:
+    result = source_check_fn(urls=[
+        "https://arxiv.org/abs/1706.03762",
+        "https://www.reuters.com/technology/ai",
+        "https://x.com/sama/status/1",
+        "https://some-random-blog.example",
+    ])
+
+    assert [r["tier"] for r in result["results"]] == ["tier1", "tier2", "tier3", "unknown"]
+    assert [r["citable_as_fact"] for r in result["results"]] == [True, True, False, False]
+
+
+def test_source_check_normalizes_domain() -> None:
+    result = source_check_fn(urls=["HTTPS://WWW.Reuters.com/x?y=1", "reuters.com", "blog.openai.com/post"])
+
+    assert [r["domain"] for r in result["results"]] == ["reuters.com", "reuters.com", "blog.openai.com"]
+    assert [r["tier"] for r in result["results"]] == ["tier2", "tier2", "tier1"]
+
+
+def test_source_check_does_not_confuse_lookalike_domains() -> None:
+    # "notopenai.com" must not match "openai.com"; "x.company.com" must not match "x.com".
+    result = source_check_fn(urls=["notopenai.com", "x.company.com"])
+
+    assert [r["tier"] for r in result["results"]] == ["unknown", "unknown"]
+
+
+def test_source_check_bad_input_from_model() -> None:
+    assert source_check_fn(urls=[])["error"] == "ValueError"
+    assert source_check_fn(urls=None)["error"] == "ValueError"
+    single = source_check_fn(urls="openai.com")  # string instead of list is accepted
+    assert single["results"][0]["tier"] == "tier1"
+    junk = source_check_fn(urls=[123, ""])
+    assert [r["tier"] for r in junk["results"]] == ["unknown", "unknown"]
+
+
+def test_source_check_is_offline(fake_http) -> None:
+    calls = fake_http(FakeResponse({}))
+    source_check_fn(urls=["https://openai.com"])
+    assert calls == []

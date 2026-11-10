@@ -160,3 +160,15 @@ tools:
             type: object
         n: {type: integer, default: 3, description: "How many items to keep. '3 tin hàng đầu' / 'top 3' -> 3; '5 bài điểm cao nhất' -> 5. Must be >= 1."}
       required: [items]
+
+  - name: source_check
+    description: "Rate how trustworthy one or more sources are from their URL or domain, using the company source-citation tiers (tier1 primary, tier2 reputable media, tier3 social / signal only). Works offline and does not open the page. USE WHEN: the user asks whether a link, site or source is reliable / đáng tin / trích dẫn được, or wants sources checked before writing a brief. DO NOT USE WHEN: the user wants the page content (use fetch), the policy text itself (use policy), or new search results (use lookup)."
+    parameters:
+      type: object
+      properties:
+        urls:
+          type: array
+          default: []
+          items: {type: string}
+          description: "Every URL or domain to check, copied exactly as the user gave them, e.g. ['https://x.com/sama/status/1', 'reuters.com']."
+      required: [urls]

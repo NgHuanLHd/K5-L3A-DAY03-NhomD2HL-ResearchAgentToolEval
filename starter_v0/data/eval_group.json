@@ -1,7 +1,7 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "14 case do nhóm tự viết: single-turn + multi-turn (routing, tham số, clarify, ranh giới) và case route tới tool mới tool_new, wiki, topk.",
+  "description": "16 case do nhóm tự viết: single-turn + multi-turn (routing, tham số, clarify, ranh giới) và case route tới 4 tool mới tool_new, wiki, topk, source_check.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
   "cases": [
     {"id": "G01_arxiv_search_new_tool", "phase": "B", "query": "Tìm paper arXiv về đánh giá AI agents, tối đa 4 kết quả.", "failure_type": "wrong_tool", "expect": {"tool_calls": [{"name": "papers", "args": {"query": "AI agents evaluation", "max_results": 4}}]}, "metadata": {"what_it_tests": "Yêu cầu tìm paper arXiv theo chủ đề phải gọi tool mới papers và giữ số lượng kết quả."}},
@@ -17,6 +17,8 @@
     {"id": "G11_tool_new_duplicates", "phase": "B", "query": "Danh sách tin mình vừa lấy bị trùng link. Bỏ các mục trùng URL, giữ bản đầu.", "failure_type": "wrong_tool", "expect": {"tool_calls": [{"name": "tool_new", "args": {"key": "url"}}]}, "metadata": {"what_it_tests": "Đã có item và user bảo bỏ trùng URL → tool_new(key=url), không lookup hay format."}},
     {"id": "G12_wiki_concept_definition", "phase": "B", "query": "Retrieval-augmented generation là gì? Giải thích ngắn gọn giúp mình.", "failure_type": "wrong_tool", "expect": {"tool_calls": [{"name": "wiki", "args": {}}]}, "metadata": {"what_it_tests": "Hỏi định nghĩa/khái niệm nền tảng → tool mới wiki, không phải lookup (tin tức) hay papers."}},
     {"id": "G13_news_not_wiki_boundary", "phase": "B", "query": "Tin mới nhất về Retrieval-augmented generation trong hôm nay có gì?", "failure_type": "wrong_tool", "expect": {"tool_calls": [{"name": "lookup", "args": {"topic": "news", "timeframe": "day"}}]}, "metadata": {"what_it_tests": "Cùng chủ đề với G12 nhưng hỏi tin mới → lookup(news, day), không gọi wiki. Đo ranh giới wiki vs lookup."}},
-    {"id": "G14_topk_keep_three", "phase": "B", "query": "Chỉ giữ 3 tin có score cao nhất, bỏ còn lại.", "failure_type": "wrong_tool", "expect": {"tool_calls": [{"name": "topk", "args": {"n": 3}}]}, "metadata": {"what_it_tests": "Đã có item và user bảo giữ top 3 theo điểm → topk(n=3), không lookup, tool_new, hay format."}}
+    {"id": "G14_topk_keep_three", "phase": "B", "query": "Chỉ giữ 3 tin có score cao nhất, bỏ còn lại.", "failure_type": "wrong_tool", "expect": {"tool_calls": [{"name": "topk", "args": {"n": 3}}]}, "metadata": {"what_it_tests": "Đã có item và user bảo giữ top 3 theo điểm → topk(n=3), không lookup, tool_new, hay format."}},
+    {"id": "G15_source_check_tweet_link", "phase": "B", "query": "Link này có đáng tin để trích dẫn làm fact không: https://x.com/sama/status/1855000000000000000", "failure_type": "wrong_tool", "expect": {"tool_calls": [{"name": "source_check", "args": {}}]}, "metadata": {"what_it_tests": "Hỏi độ tin cậy của một link → tool mới source_check, không fetch nội dung hay timeline."}},
+    {"id": "G16_policy_not_source_check", "phase": "B", "query": "Policy công ty quy định gì về các cấp độ nguồn khi trích dẫn?", "failure_type": "wrong_tool", "expect": {"tool_calls": [{"name": "policy", "args": {"policy_area": "source_citation"}}]}, "metadata": {"what_it_tests": "Hỏi nội dung policy → policy(source_citation), không gọi source_check. Đo ranh giới source_check vs policy."}}
   ]
 }
