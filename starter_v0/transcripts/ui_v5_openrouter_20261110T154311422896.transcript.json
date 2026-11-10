@@ -1,0 +1,69 @@
+{
+  "transcript_id": "ui_v5_openrouter_20261110T154311422896",
+  "version": "v5",
+  "artifact_version": "v5+p120eb7389758+tb70d10f58292",
+  "prompt_hash": "120eb7389758506d44358fbf3f7394b450f18a19d33887d0e3c4c92b3b8b3ad9",
+  "tools_hash": "b70d10f582929808f1b126a7f976fe818ad4d52e5935c2213d1cd4f0b8d8a4b4",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "C:\\IT2\\AI Action\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\IT2\\AI Action\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "interface": "streamlit",
+  "created_at": "2026-11-10T15:43:11",
+  "updated_at": "2026-11-10T15:44:23",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T15:43:35",
+      "user": "từ hôm nay đến ngày 17/12 là bao nhiêu ngày",
+      "status": "answered",
+      "assistant_text": "Từ hôm nay, ngày 10 tháng 11 năm 2026, đến ngày 17 tháng 12 năm 2026 là 37 ngày.",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "Từ hôm nay, ngày 10 tháng 11 năm 2026, đến ngày 17 tháng 12 năm 2026 là 37 ngày.",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [],
+      "ended_at": "2026-11-10T15:43:40"
+    },
+    {
+      "turn_index": 2,
+      "started_at": "2026-11-10T15:43:53",
+      "user": "việt nam có bao nhiêu tỉnh thành",
+      "status": "answered",
+      "assistant_text": "Việt Nam hiện có 63 tỉnh thành, bao gồm 58 tỉnh và 5 thành phố trực thuộc trung ương. Các thành phố trực thuộc trung ương là Hà Nội, Hồ Chí Minh, Đà Nẵng, Hải Phòng và Cần Thơ.",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "Việt Nam hiện có 63 tỉnh thành, bao gồm 58 tỉnh và 5 thành phố trực thuộc trung ương. Các thành phố trực thuộc trung ương là Hà Nội, Hồ Chí Minh, Đà Nẵng, Hải Phòng và Cần Thơ.",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [],
+      "ended_at": "2026-11-10T15:43:55"
+    },
+    {
+      "turn_index": 3,
+      "started_at": "2026-11-10T15:44:21",
+      "user": "iphone đã sản xuất đến iphone mấy",
+      "status": "answered",
+      "assistant_text": "Tính đến thời điểm hiện tại, Apple đã sản xuất đến iPhone 15, được ra mắt vào tháng 9 năm 2023. Dòng sản phẩm này bao gồm các phiên bản như iPhone 15, iPhone 15 Plus, iPhone 15 Pro và iPhone 15 Pro Max.",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "Tính đến thời điểm hiện tại, Apple đã sản xuất đến iPhone 15, được ra mắt vào tháng 9 năm 2023. Dòng sản phẩm này bao gồm các phiên bản như iPhone 15, iPhone 15 Plus, iPhone 15 Pro và iPhone 15 Pro Max.",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [],
+      "ended_at": "2026-11-10T15:44:23"
+    }
+  ]
+}

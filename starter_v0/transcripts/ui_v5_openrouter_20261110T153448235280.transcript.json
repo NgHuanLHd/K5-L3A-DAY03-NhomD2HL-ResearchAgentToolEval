@@ -1,0 +1,52 @@
+{
+  "transcript_id": "ui_v5_openrouter_20261110T153448235280",
+  "version": "v5",
+  "artifact_version": "v5+p120eb7389758+tb70d10f58292",
+  "prompt_hash": "120eb7389758506d44358fbf3f7394b450f18a19d33887d0e3c4c92b3b8b3ad9",
+  "tools_hash": "b70d10f582929808f1b126a7f976fe818ad4d52e5935c2213d1cd4f0b8d8a4b4",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "C:\\IT2\\AI Action\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\IT2\\AI Action\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "interface": "streamlit",
+  "created_at": "2026-11-10T15:34:48",
+  "updated_at": "2026-11-10T15:37:24",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T15:35:16",
+      "user": "còn bao nhiêu tuần nữa tới 17/12",
+      "status": "answered",
+      "assistant_text": "Hôm nay là ngày 17 tháng 10 năm 2023. Để tính số tuần còn lại đến ngày 17 tháng 12 năm 2023, ta có:\n\n- Từ 17/10 đến 17/12 là 2 tháng.\n- Số tuần trong 2 tháng này là khoảng 8 tuần.\n\nVậy còn khoảng 8 tuần nữa đến ngày 17/12.",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "Hôm nay là ngày 17 tháng 10 năm 2023. Để tính số tuần còn lại đến ngày 17 tháng 12 năm 2023, ta có:\n\n- Từ 17/10 đến 17/12 là 2 tháng.\n- Số tuần trong 2 tháng này là khoảng 8 tuần.\n\nVậy còn khoảng 8 tuần nữa đến ngày 17/12.",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [],
+      "ended_at": "2026-11-10T15:35:19"
+    },
+    {
+      "turn_index": 2,
+      "started_at": "2026-11-10T15:37:22",
+      "user": "việt nam có bao nhiêu tỉnh thành",
+      "status": "answered",
+      "assistant_text": "Việt Nam hiện có 63 tỉnh thành, bao gồm 58 tỉnh và 5 thành phố trực thuộc trung ương. Các thành phố trực thuộc trung ương là Hà Nội, Hồ Chí Minh, Đà Nẵng, Hải Phòng và Cần Thơ.",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "Việt Nam hiện có 63 tỉnh thành, bao gồm 58 tỉnh và 5 thành phố trực thuộc trung ương. Các thành phố trực thuộc trung ương là Hà Nội, Hồ Chí Minh, Đà Nẵng, Hải Phòng và Cần Thơ.",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [],
+      "ended_at": "2026-11-10T15:37:24"
+    }
+  ]
+}

@@ -23,6 +23,24 @@ def now_iso() -> str:
     return datetime.now().isoformat(timespec="seconds")
 
 
+VI_WEEKDAYS = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"]
+
+
+def with_runtime_context(system_prompt: str, now: datetime | None = None) -> str:
+    """Append today's date for live chat (the model has no clock and guesses its training year).
+
+    Only used by chat.py and app.py. run_eval.py keeps the artifact prompt unchanged so
+    eval runs stay reproducible and prompt_hash still matches artifacts/system_prompt.md.
+    """
+    now = now or datetime.now()
+    return (
+        f"{system_prompt.rstrip()}\n\n"
+        f"Runtime context: today is {VI_WEEKDAYS[now.weekday()]}, {now:%d/%m/%Y} "
+        f"(ISO {now:%Y-%m-%d}, local time {now:%H:%M}). Use this date for 'hôm nay', "
+        "'tuần này', relative dates and date arithmetic; never assume another year.\n"
+    )
+
+
 def safe_slug(value: str) -> str:
     slug = re.sub(r"[^A-Za-z0-9_.-]+", "_", value.strip())
     return slug.strip("_") or "run"
@@ -151,7 +169,7 @@ def write_transcript(path: Path, transcript: dict[str, Any]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Interactive Research Agent chat with transcript logging.")
-    parser.add_argument("--provider", choices=["openrouter", "openai", "anthropic", "gemini", "ollama"], required=True)
+    parser.add_argument("--provider", choices=["openrouter", "openai", "anthropic", "gemini", "ollama", "groq"], required=True)
     parser.add_argument("--model", default=None)
     parser.add_argument("--version", required=True, help="Student-chosen artifact version label, e.g. v0, v1, v2.")
     parser.add_argument("--system-prompt", type=Path, default=ARTIFACTS_DIR / "system_prompt.md")
@@ -208,7 +226,7 @@ def main() -> None:
 
         turn_index += 1
         messages = [
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": with_runtime_context(system_prompt)},
             *trim_history(history, args.history_window),
             {"role": "user", "content": user_text},
         ]
