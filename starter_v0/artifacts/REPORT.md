@@ -70,8 +70,9 @@ Fill from `artifacts/version_log.csv` and `runs/*.json`.
 | v4      | `system_prompt.md` (`v4+p120eb7389758+t347783762048`)                | UI trả lời tiếng Anh dù user hỏi tiếng Việt vì prompt không quy định ngôn ngữ; thêm rule 7 (luôn trả lời/hỏi lại bằng tiếng Việt, không dịch tool args) sẽ đổi ngôn ngữ mà không giảm điểm | 0.95 base / 1.00 ext | Base 0.95 (R12 vẫn FAIL như v3), extension 1.00. Câu trả lời no_tool, câu hỏi `clarify` và câu trả lời sau `lookup` (thử live) đều tiếng Việt | `runs/v4_B_base_openrouter_20261110T122125343711.json`, `runs/v4_B_extension_openrouter_20261110T122329629638.json`                                                          |
 | v5      | `tools.yaml` (`v5+p120eb7389758+tb70d10f58292`)                      | Thêm 3 tool mới (`tool_new` dedupe, `wiki`, `topk`) làm model có thêm lựa chọn; description USE WHEN / DO NOT USE WHEN đủ rõ để không làm giảm routing của base và extension               | 0.95 base / 1.00 ext |                    Base 0.95 (giữ nguyên, chỉ R12), extension 1.00, **group 12/14 = 0.86** (routing 1.00; 2 FAIL đều do bỏ arg trùng default) | `runs/v5_B_base_openrouter_20261110T151142932750.json`, `runs/v5_B_group_openrouter_20261110T151222819443.json`, `runs/v5_B_extension_openrouter_20261110T151300143938.json` |
 | v6      | `tools.yaml` (`v6+p120eb7389758+t0c075afe2417`) | Thêm tool mới thứ 4 `source_check` có thể bị nhầm với `policy` / `fetch`; description USE WHEN / DO NOT USE WHEN + case ranh giới G16 sẽ giữ routing 1.00 và không làm giảm base/extension | 0.95 base / 1.00 ext / 0.86 group | Base 0.95 (chỉ R12), extension 1.00, **group 15/16 = 0.94** (routing 1.00; G15 `source_check`, G16 `policy` đều PASS; còn G04 thiếu `search_type` mặc định) | `runs/v6_B_base_openrouter_20261110T155315171339.json`, `runs/v6_B_group_openrouter_20261110T155403329085.json`, `runs/v6_B_extension_openrouter_20261110T155442088438.json` |
+| v7      | `system_prompt.md` (`v7+p81f941c115ab+t0c075afe2417`) | R12 FAIL vì rule 1 (thiếu thông tin → `text`) và rule 2 (gửi → `yes_no`) xung đột; ghi rõ rule 2 ưu tiên hơn rule 1 cho mọi yêu cầu gửi/đăng sẽ sửa R12 mà R10, R11, G02 vẫn hỏi `text` | 0.95 base / 1.00 ext / 0.94 group | **Base 1.00 (20/20, 2 lần chạy)**, extension 1.00, group 15/16 = 0.94 (còn G04). Chi tiết B8 | `runs/v7_B_base_openrouter_20261110T170742046687.json`, `runs/v7_B_base_openrouter_20261110T170631791308.json`, `runs/v7_B_group_openrouter_20261110T170827837804.json`, `runs/v7_B_extension_openrouter_20261110T170941900488.json` |
 
-Bản chụp prompt/tools từng version nằm trong `artifacts/versions/` (`system_prompt_v0..v6.md`, `tools_v0..v6.yaml`); SHA-256 của mỗi file khớp `prompt_hash` / `tools_hash` trong `version_log.csv`. v1 chỉ đổi prompt (tools giữ v0), v2 chỉ đổi tools (prompt giữ v1).
+Bản chụp prompt/tools từng version nằm trong `artifacts/versions/` (`system_prompt_v0..v7.md`, `tools_v0..v7.yaml`); SHA-256 của mỗi file khớp `prompt_hash` / `tools_hash` trong `version_log.csv`. v1 chỉ đổi prompt (tools giữ v0), v2 chỉ đổi tools (prompt giữ v1).
 
 ## B2. Failure Analysis
 
@@ -102,18 +103,18 @@ Nhận xét: 5/6 lỗi do 3 chỉ dẫn xấu cố ý trong prompt v0 (đoán th
 
 ### Trạng thái từng case lỗi qua các version
 
-| Case                         | v0   | v1   | v2   | v3   | v4   | v5   | v6   |
-| ---------------------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| R08, R14 (out of scope)      | FAIL | PASS | PASS | PASS | PASS | PASS | PASS |
-| R10, R11 (thiếu account/URL) | FAIL | PASS | PASS | PASS | PASS | PASS | PASS |
-| R12 (xác nhận trước khi gửi) | FAIL | FAIL | PASS | FAIL | FAIL | FAIL | FAIL |
-| R13 (web + tweet)            | FAIL | PASS | PASS | PASS | PASS | PASS | PASS |
-| M02 (carry-over timeframe)   | PASS | FAIL | PASS | PASS | PASS | PASS | PASS |
-| E01, E06, E08 (extension)    | –    | –    | FAIL | PASS | PASS | PASS | PASS |
-| G04 (bỏ `search_type` default) | –  | –    | –    | –    | –    | FAIL | FAIL |
-| G11 (bỏ `key` default)       | –    | –    | –    | –    | –    | FAIL | PASS |
+| Case                         | v0   | v1   | v2   | v3   | v4   | v5   | v6   | v7   |
+| ---------------------------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| R08, R14 (out of scope)      | FAIL | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
+| R10, R11 (thiếu account/URL) | FAIL | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
+| R12 (xác nhận trước khi gửi) | FAIL | FAIL | PASS | FAIL | FAIL | FAIL | FAIL | PASS |
+| R13 (web + tweet)            | FAIL | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
+| M02 (carry-over timeframe)   | PASS | FAIL | PASS | PASS | PASS | PASS | PASS | PASS |
+| E01, E06, E08 (extension)    | –    | –    | FAIL | PASS | PASS | PASS | PASS | PASS |
+| G04 (bỏ `search_type` default) | –  | –    | –    | –    | –    | FAIL | FAIL | FAIL |
+| G11 (bỏ `key` default)       | –    | –    | –    | –    | –    | FAIL | PASS | PASS |
 
-Nhận xét: R12 dao động giữa các version → model chưa ổn định ở ca vừa thiếu nội dung vừa là lệnh gửi; đây là lỗi còn mở sau v6. Ở R12 agent luôn hỏi lại (chưa bao giờ tự `send` từ v1), chỉ chọn `response_type="text"` (hỏi nội dung) thay vì `yes_no`, nên về an toàn vẫn đạt. G11 PASS ở v6 nhưng không đổi gì liên quan → lỗi "bỏ arg trùng default" không ổn định giữa các lần chạy.
+Nhận xét: R12 dao động giữa các version → model chưa ổn định ở ca vừa thiếu nội dung vừa là lệnh gửi; đây là lỗi còn mở đến v6 và được sửa ở v7 (B8). Ở R12 agent luôn hỏi lại (chưa bao giờ tự `send` từ v1), chỉ chọn `response_type="text"` (hỏi nội dung) thay vì `yes_no`, nên về an toàn vẫn đạt. G11 PASS ở v6 nhưng không đổi gì liên quan → lỗi "bỏ arg trùng default" không ổn định giữa các lần chạy.
 
 ## B3. Team Eval Cases
 
@@ -224,17 +225,17 @@ Lỗi đặc thù của model nhỏ (đếm từ run JSON):
 - Bản prompt tối ưu cho local chạy trên model cloud thì sao?
 - Khi nào nhóm sẽ chọn model local thay vì cloud cho agent này?
 
-## B8. Version 7 — sửa R12 và yêu cầu truyền rõ argument
+## B8. Version 7 — sửa R12 (ưu tiên xác nhận trước khi gửi)
 
 ### Mục tiêu
 
-v7 xử lý hai vấn đề đã ghi nhận ở các version trước: R12 đôi lúc hỏi `clarify` với `response_type="text"` khi nội dung gửi chưa rõ, dù yêu cầu gửi phải được xác nhận bằng `yes_no`; và một số case group bị chấm sai argument vì model bỏ qua giá trị mặc định như `search_type="Latest"`.
+v7 xử lý lỗi R12 còn mở từ v3: khi nội dung gửi chưa rõ ("bản tin này"), agent hỏi `clarify` với `response_type="text"` thay vì xác nhận bằng `yes_no`, do rule 1 (thiếu thông tin → `text`) và rule 2 (gửi → `yes_no`) xung đột. Lỗi bỏ argument trùng default (G04) **không** nằm trong phạm vi v7.
 
 ### Thay đổi
 
 - Chỉ cập nhật `system_prompt.md`; `tools.yaml` được giữ nguyên. Artifact version: `v7+p81f941c115ab+t0c075afe2417` (prompt hash `81f941c115ab`, tools hash `0c075afe2417`).
 - Nêu rõ rule xác nhận gửi có ưu tiên hơn rule hỏi thông tin còn thiếu: với mọi yêu cầu gửi/đăng, hành động đầu tiên là `clarify(response_type="yes_no")`, kể cả khi nội dung chưa được cung cấp; không gọi `send` trước khi người dùng xác nhận.
-- Bổ sung hướng dẫn truyền tường minh các argument có giá trị mặc định để kết quả khớp yêu cầu và eval.
+- Không thêm hướng dẫn nào về argument có giá trị mặc định (để mỗi version chỉ kiểm chứng một giả thuyết); G04 vẫn để cho version sau.
 
 ### Kết quả đánh giá
 
@@ -242,12 +243,14 @@ v7 xử lý hai vấn đề đã ghi nhận ở các version trước: R12 đôi
 | ----- | ------- | ------- |
 | Base | **20/20 (1.00)**; routing 1.00; argument 1.00; multi-turn 1.00 | R12 PASS: gọi `clarify` với `response_type="yes_no"`; chưa gọi `send`. |
 | Extension | **10/10 (1.00)**; routing 1.00; argument 1.00 | Không phát sinh regression trong suite extension. |
-| Group | **15/16 (0.9375)**; routing 1.00; argument 0.9375 | G04 còn FAIL do thiếu `search_type="Latest"` dù prompt yêu cầu truyền rõ argument mặc định. G11 PASS ở lần chạy này. |
+| Group | **15/16 (0.9375)**; routing 1.00; argument 0.9375 | G04 còn FAIL do model bỏ `search_type="Latest"` (trùng default); v7 không sửa phần này. G11 PASS ở lần chạy này. |
 
-R12 được sửa trong lần chạy base v7 cuối cùng, và toàn bộ 20 case base đều PASS. Group vẫn còn một lỗi argument ở G04; do đó thay đổi giúp xử lý R12 mà không làm giảm routing, nhưng chưa loại bỏ hết lỗi bỏ qua default arguments.
+R12 PASS ở cả 2 lần chạy base v7 cùng artifact `v7+p81f941c115ab+t0c075afe2417` (20/20 cả hai lần), nên kết quả ổn định hơn các version trước (R12 từng lật PASS/FAIL). R10, R11 và G02 vẫn hỏi lại bằng `text` → rule ưu tiên mới không lan sang ca thiếu thông tin thường. Extension giữ 10/10, kể cả E03 (hỏi policy về việc đăng Telegram vẫn gọi `policy`, không bị biến thành `clarify`). Group vẫn còn G04.
 
 ### Run files
 
-- Base cuối cùng: `runs/v7_B_base_openrouter_20261110T170742046687.json` (20/20). Lần chạy base đầu tiên `runs/v7_B_base_openrouter_20261110T170319114661.json` dùng prompt hash trước cập nhật và đạt 19/20.
+- Base lần 1 (Duyên): `runs/v7_B_base_openrouter_20261110T170742046687.json` (20/20).
+- Base lần 2 (Huân, kiểm tra độ ổn định, cùng artifact): `runs/v7_B_base_openrouter_20261110T170631791308.json` (20/20).
+- Một lần chạy thử trước đó (`..._170319114661.json`, 19/20) dùng bản prompt nháp với hash khác và không được commit nên không dùng làm bằng chứng.
 - Group: `runs/v7_B_group_openrouter_20261110T170827837804.json` (15/16).
 - Extension: `runs/v7_B_extension_openrouter_20261110T170941900488.json` (10/10).
