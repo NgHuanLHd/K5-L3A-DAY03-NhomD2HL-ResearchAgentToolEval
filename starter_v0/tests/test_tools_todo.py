@@ -131,3 +131,123 @@ def test_tool_new_bad_items_returns_error_dict() -> None:
     result = tool_new_fn(items="not-a-list", key="url")
     assert result["error"] == "TypeError"
     assert "items" in result["message"]
+
+
+# ---------------- wiki ----------------
+
+wiki_fn = TOOL_FUNCTIONS["wiki"]
+
+WIKI_TRANSFORMER = {
+    "type": "standard",
+    "title": "Transformer (deep learning architecture)",
+    "extract": "A transformer is a deep learning architecture based on the multi-head attention mechanism.",
+    "content_urls": {"desktop": {"page": "https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)"}},
+}
+
+
+def test_wiki_requests_summary_endpoint_and_maps_item(fake_http) -> None:
+    calls = fake_http(FakeResponse(WIKI_TRANSFORMER))
+
+    result = wiki_fn(title="Transformer (deep learning architecture)")
+
+    assert len(calls) == 1
+    assert calls[0]["method"] == "GET"
+    assert calls[0]["url"] == (
+        "https://en.wikipedia.org/api/rest_v1/page/summary/Transformer_%28deep_learning_architecture%29"
+    )
+    assert "User-Agent" in calls[0]["headers"]
+    assert result["lang"] == "en"
+    assert result["is_disambiguation"] is False
+    assert result["items"] == [{
+        "title": "Transformer (deep learning architecture)",
+        "url": "https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)",
+        "source": "en.wikipedia.org",
+        "summary": WIKI_TRANSFORMER["extract"],
+    }]
+
+
+def test_wiki_empty_title_returns_error_without_request(fake_http) -> None:
+    calls = fake_http(FakeResponse(WIKI_TRANSFORMER))
+
+    for bad in ["", "   ", None, 123]:
+        result = wiki_fn(title=bad)
+        assert result["tool"] == "wiki"
+        assert result["error"] in {"ValueError", "TypeError"}
+
+    assert calls == []
+
+
+def test_wiki_unknown_lang_falls_back_to_english(fake_http) -> None:
+    calls = fake_http(FakeResponse(WIKI_TRANSFORMER))
+
+    result = wiki_fn(title="OpenAI", lang="fr")
+
+    assert calls[0]["url"].startswith("https://en.wikipedia.org/")
+    assert result["lang"] == "en"
+
+
+def test_wiki_vietnamese_title_is_url_encoded(fake_http) -> None:
+    calls = fake_http(FakeResponse({"title": "Trí tuệ nhân tạo", "extract": "AI"}))
+
+    wiki_fn(title="  Trí tuệ   nhân tạo ", lang="vi")
+
+    assert calls[0]["url"] == (
+        "https://vi.wikipedia.org/api/rest_v1/page/summary/Tr%C3%AD_tu%E1%BB%87_nh%C3%A2n_t%E1%BA%A1o"
+    )
+
+
+def test_wiki_missing_page_returns_not_found_dict(fake_http) -> None:
+    fake_http(FakeResponse(status_code=404))
+
+    result = wiki_fn(title="Definitely not a real article xyz")
+
+    assert result["error"] == "not_found"
+    assert "Definitely not a real article xyz" in result["message"]
+
+
+def test_wiki_vi_miss_retries_english_once(monkeypatch) -> None:
+    # Regression: in the UI the model sent title="Artificial Intelligence", lang="vi" -> 404.
+    import requests
+
+    responses = [FakeResponse(status_code=404), FakeResponse(WIKI_TRANSFORMER)]
+    calls: list[str] = []
+
+    def _fake_get(url, **kwargs):
+        calls.append(url)
+        return responses.pop(0)
+
+    monkeypatch.setattr(requests, "get", _fake_get)
+
+    result = wiki_fn(title="Artificial Intelligence", lang="vi")
+
+    assert calls == [
+        "https://vi.wikipedia.org/api/rest_v1/page/summary/Artificial_Intelligence",
+        "https://en.wikipedia.org/api/rest_v1/page/summary/Artificial_Intelligence",
+    ]
+    assert result["lang"] == "en"
+    assert result["fallback_from"] == "vi"
+    assert result["items"][0]["source"] == "en.wikipedia.org"
+
+
+def test_wiki_vi_and_en_both_missing_returns_not_found(fake_http) -> None:
+    calls = fake_http(FakeResponse(status_code=404))
+
+    result = wiki_fn(title="Zzqx", lang="vi")
+
+    assert len(calls) == 2
+    assert result["error"] == "not_found"
+    assert "(vi)" in result["message"]
+
+
+def test_wiki_http_error_returns_error_dict(fake_http) -> None:
+    fake_http(FakeResponse(status_code=429))
+    assert wiki_fn(title="OpenAI")["error"] == "HTTPError"
+
+
+def test_wiki_long_extract_is_truncated(fake_http) -> None:
+    fake_http(FakeResponse({"title": "Long", "extract": "x" * 3000}))
+
+    summary = wiki_fn(title="Long")["items"][0]["summary"]
+
+    assert len(summary) == 1500
+    assert summary.endswith("...")

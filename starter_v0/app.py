@@ -56,7 +56,7 @@ SAMPLE_QUERIES = [
 TOOL_ICONS = {
     "clarify": "❓", "timeline": "👤", "social_search": "🐦", "lookup": "🔎",
     "fetch": "📄", "format": "📝", "send": "📤", "policy": "📘",
-    "papers": "📚", "paper_text": "📑",
+    "papers": "📚", "paper_text": "📑", "tool_new": "🧹", "wiki": "📖",
 }
 
 

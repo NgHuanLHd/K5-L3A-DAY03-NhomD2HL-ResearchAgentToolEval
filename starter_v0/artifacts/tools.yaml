@@ -137,3 +137,12 @@ tools:
             type: object
         key: {type: string, enum: [url, title], default: "url", description: "url when the user says trùng link / trùng nguồn / trùng URL. title when they say trùng tiêu đề. Otherwise url."}
       required: [items]
+
+  - name: wiki
+    description: "Get a short encyclopedia summary (definition, background, history) of ONE concept, technology, person or organization from Wikipedia. USE WHEN: the user asks what something is or wants an explanation / definition / background ('X là gì', 'giải thích', 'định nghĩa', 'lịch sử của'). DO NOT USE WHEN: the user wants recent news or updates (use lookup), tweets (use social_search or timeline), research papers (use papers), or gives a URL to read (use fetch)."
+    parameters:
+      type: object
+      properties:
+        title: {type: string, default: "", description: "Only the concept name, as the Wikipedia article title in English when possible, e.g. 'Transformer (deep learning architecture)', 'Retrieval-augmented generation', 'OpenAI'. No question words ('là gì', 'what is')."}
+        lang: {type: string, enum: [en, vi], default: "en", description: "vi only when the user explicitly asks for the Vietnamese Wikipedia article; otherwise en."}
+      required: [title]
