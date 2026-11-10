@@ -1,0 +1,35 @@
+{
+  "transcript_id": "ui_v6_openrouter_20261110T171448169309",
+  "version": "v6",
+  "artifact_version": "v6+p81f941c115ab+t0c075afe2417",
+  "prompt_hash": "81f941c115ab2a819abea9a51ac5652f42e9e044a3baf77d0970803b51bd0fa9",
+  "tools_hash": "0c075afe24170e77d0d4c716cf3ef2fd22332b2673e261dee53498fb5605df9f",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "E:\\AIVin\\Lab_Completed\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "E:\\AIVin\\Lab_Completed\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "interface": "streamlit",
+  "created_at": "2026-11-10T17:14:48",
+  "updated_at": "2026-11-10T17:14:59",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T17:14:57",
+      "user": "hôm nay ngày bao nhiêu",
+      "status": "answered",
+      "assistant_text": "Hôm nay là ngày 10 tháng 11 năm 2026.",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "Hôm nay là ngày 10 tháng 11 năm 2026.",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [],
+      "ended_at": "2026-11-10T17:14:59"
+    }
+  ]
+}
