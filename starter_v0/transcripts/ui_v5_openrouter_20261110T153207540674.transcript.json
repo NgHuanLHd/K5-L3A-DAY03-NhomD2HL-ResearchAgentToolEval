@@ -1,0 +1,125 @@
+{
+  "transcript_id": "ui_v5_openrouter_20261110T153207540674",
+  "version": "v5",
+  "artifact_version": "v5+p120eb7389758+tb70d10f58292",
+  "prompt_hash": "120eb7389758506d44358fbf3f7394b450f18a19d33887d0e3c4c92b3b8b3ad9",
+  "tools_hash": "b70d10f582929808f1b126a7f976fe818ad4d52e5935c2213d1cd4f0b8d8a4b4",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "C:\\IT2\\AI Action\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\IT2\\AI Action\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "interface": "streamlit",
+  "created_at": "2026-11-10T15:32:07",
+  "updated_at": "2026-11-10T15:33:48",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T15:32:12",
+      "user": "hello",
+      "status": "answered",
+      "assistant_text": "Xin chào! Bạn cần giúp gì hôm nay?",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "Xin chào! Bạn cần giúp gì hôm nay?",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [],
+      "ended_at": "2026-11-10T15:32:18"
+    },
+    {
+      "turn_index": 2,
+      "started_at": "2026-11-10T15:32:50",
+      "user": "hello, reply this mesage in english",
+      "status": "answered",
+      "assistant_text": "Tôi xin lỗi, nhưng tôi chỉ có thể trả lời bằng tiếng Việt. Bạn cần giúp gì?",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "Tôi xin lỗi, nhưng tôi chỉ có thể trả lời bằng tiếng Việt. Bạn cần giúp gì?",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [],
+      "ended_at": "2026-11-10T15:32:52"
+    },
+    {
+      "turn_index": 3,
+      "started_at": "2026-11-10T15:33:42",
+      "user": "define about AI",
+      "status": "answered",
+      "assistant_text": "Trí tuệ nhân tạo (AI) là khả năng của các hệ thống tính toán để thực hiện các nhiệm vụ thường liên quan đến trí thông minh của con người, chẳng hạn như học hỏi, lý luận, giải quyết vấn đề, nhận thức và ra quyết định. Đây cũng là một lĩnh vực nghiên cứu bao gồm khoa học máy tính, kỹ thuật và toán học, phát triển và nghiên cứu các phương pháp và phần mềm cho phép máy móc nhận thức môi trường của chúng và sử dụng học hỏi cũng như trí thông minh để thực hiện các hành động tối đa hóa khả năng đạt được các mục tiêu đã định.\n\nBạn có thể tìm hiểu thêm tại [Wikipedia](https://en.wikipedia.org/wiki/Artificial_intelligence).",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": null,
+          "tool_calls": [
+            {
+              "name": "wiki",
+              "args": {
+                "title": "Artificial Intelligence",
+                "lang": "en"
+              }
+            }
+          ],
+          "tool_results": [
+            {
+              "tool": "wiki",
+              "args": {
+                "title": "Artificial Intelligence",
+                "lang": "en"
+              },
+              "result": {
+                "tool": "wiki",
+                "lang": "en",
+                "is_disambiguation": false,
+                "items": [
+                  {
+                    "title": "Artificial intelligence",
+                    "url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
+                    "source": "en.wikipedia.org",
+                    "summary": "Artificial intelligence (AI) is the capability of computational systems to perform tasks typically associated with human intelligence, such as learning, reasoning, problem-solving, perception, and decision-making. It is also a field of research spanning computer science, engineering, and mathematics that develops and studies methods and software enabling machines to perceive their environment and use learning and intelligence to take actions that maximise their chances of achieving defined goals."
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "assistant_text": "Trí tuệ nhân tạo (AI) là khả năng của các hệ thống tính toán để thực hiện các nhiệm vụ thường liên quan đến trí thông minh của con người, chẳng hạn như học hỏi, lý luận, giải quyết vấn đề, nhận thức và ra quyết định. Đây cũng là một lĩnh vực nghiên cứu bao gồm khoa học máy tính, kỹ thuật và toán học, phát triển và nghiên cứu các phương pháp và phần mềm cho phép máy móc nhận thức môi trường của chúng và sử dụng học hỏi cũng như trí thông minh để thực hiện các hành động tối đa hóa khả năng đạt được các mục tiêu đã định.\n\nBạn có thể tìm hiểu thêm tại [Wikipedia](https://en.wikipedia.org/wiki/Artificial_intelligence).",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [
+        {
+          "tool": "wiki",
+          "args": {
+            "title": "Artificial Intelligence",
+            "lang": "en"
+          },
+          "result": {
+            "tool": "wiki",
+            "lang": "en",
+            "is_disambiguation": false,
+            "items": [
+              {
+                "title": "Artificial intelligence",
+                "url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
+                "source": "en.wikipedia.org",
+                "summary": "Artificial intelligence (AI) is the capability of computational systems to perform tasks typically associated with human intelligence, such as learning, reasoning, problem-solving, perception, and decision-making. It is also a field of research spanning computer science, engineering, and mathematics that develops and studies methods and software enabling machines to perceive their environment and use learning and intelligence to take actions that maximise their chances of achieving defined goals."
+              }
+            ]
+          }
+        }
+      ],
+      "ended_at": "2026-11-10T15:33:48"
+    }
+  ]
+}
