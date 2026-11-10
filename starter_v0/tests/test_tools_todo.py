@@ -104,19 +104,30 @@ def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
     pytest.skip(TODO)
 
 
-# ---------------- YOUR NEW TOOL(S) ----------------
-# Write at least 3 tests per tool your team adds:
-#   1. happy path (mocked if it calls an API)
-#   2. bad / missing input from the model (empty string, wrong type, out-of-enum value)
-#   3. failure path (missing key, HTTP error, timeout) -> returns error dict, does not raise
+# ---------------- tool_new ----------------
 
-def test_my_new_tool_happy_path() -> None:
-    pytest.skip(TODO)
+tool_new_fn = TOOL_FUNCTIONS["tool_new"]
 
 
-def test_my_new_tool_bad_input_from_model() -> None:
-    pytest.skip(TODO)
+def test_tool_new_keeps_first_url_and_counts_removed() -> None:
+    items = [
+        {"title": "A", "url": "https://openai.com/a"},
+        {"title": "A again", "url": "https://openai.com/a/"},
+        {"title": "B", "url": "https://example.com/b"},
+    ]
+    result = tool_new_fn(items=items, key="url")
+    assert result["removed_count"] == 1
+    assert result["kept_count"] == 2
+    assert [item["title"] for item in result["items"]] == ["A", "B"]
 
 
-def test_my_new_tool_failure_returns_error_dict() -> None:
-    pytest.skip(TODO)
+def test_tool_new_rejects_key_outside_enum() -> None:
+    result = tool_new_fn(items=[{"url": "https://x.com"}], key="author")
+    assert result["error"] == "ValueError"
+    assert "key" in result["message"]
+
+
+def test_tool_new_bad_items_returns_error_dict() -> None:
+    result = tool_new_fn(items="not-a-list", key="url")
+    assert result["error"] == "TypeError"
+    assert "items" in result["message"]
