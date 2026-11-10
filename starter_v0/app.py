@@ -35,7 +35,7 @@ from tools import load_tool_declarations, to_openai_tools  # noqa: E402
 from versioning import artifact_version_dict, build_artifact_version  # noqa: E402
 
 PROVIDER = "openrouter"
-VERSION_LABEL = "v3"
+VERSION_LABEL = "v4"
 HISTORY_WINDOW = 5
 MAX_TOOL_ROUNDS = 4
 SYSTEM_PROMPT_PATH = ARTIFACTS_DIR / "system_prompt.md"
