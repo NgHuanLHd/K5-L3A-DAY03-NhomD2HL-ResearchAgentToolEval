@@ -60,6 +60,178 @@ TOOL_ICONS = {
     "papers": "📚", "paper_text": "📑", "tool_new": "🧹", "wiki": "📖", "topk": "🏆", "source_check": "🛡️",
 }
 
+# --- Giao diện xanh nhẹ nhàng -------------------------------------------------
+THEME_CSS = """
+<style>
+:root {
+    --blue-50:  #F2F8FD;
+    --blue-100: #E3F0FA;
+    --blue-200: #C9E1F5;
+    --blue-300: #A5CDEE;
+    --blue-500: #4A9BD9;
+    --blue-600: #2F82C4;
+    --blue-800: #1F4E79;
+    --ink:      #0A0A0A;
+    --radius:   16px;
+}
+
+/* Cỡ chữ lớn, rõ ràng */
+html, body, .stApp { font-size: 17px; }
+[data-testid="stChatMessage"] p, [data-testid="stChatMessage"] li { font-size: 1.05rem; line-height: 1.65; }
+[data-testid="stSidebar"] .stButton > button p { font-size: .95rem; font-weight: 500; }
+
+/* Nền tổng thể: gradient xanh rất nhạt */
+.stApp {
+    background: linear-gradient(160deg, #F7FBFF 0%, #EAF4FC 55%, #E2F0F9 100%);
+    color: var(--ink);
+}
+.block-container { padding-top: 2rem; max-width: 980px; }
+header[data-testid="stHeader"] { background: transparent; }
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #E3F0FA 0%, #D3E8F7 100%);
+    border-right: 1px solid var(--blue-200);
+}
+[data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 { color: #0A0A0A !important; font-weight: 800; }
+
+/* Huy hiệu nhóm trong sidebar */
+.side-brand {
+    display: flex; align-items: center; gap: .75rem;
+    background: #FFFFFF; border: 2px solid var(--blue-500);
+    border-radius: 18px; padding: .7rem .9rem; margin-bottom: 1rem;
+    box-shadow: 0 4px 14px rgba(74,155,217,.25);
+}
+.side-brand .logo {
+    width: 48px; height: 48px; border-radius: 14px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem; background: linear-gradient(135deg, #4A9BD9, #1F6FB5);
+    box-shadow: 0 3px 8px rgba(31,111,181,.35);
+}
+.side-brand .name { font-size: 1.35rem; font-weight: 900; color: #0A0A0A; line-height: 1.1; }
+.side-brand .sub  { font-size: .8rem; font-weight: 600; color: #1F6FB5; letter-spacing: .06em; }
+[data-testid="stSidebar"] code {
+    background: rgba(255,255,255,.7); color: var(--blue-800); border-radius: 8px;
+}
+
+/* Tiêu đề */
+h1, h2, h3 { color: #0A0A0A !important; letter-spacing: -0.01em; font-weight: 800; }
+h2 { font-size: 1.6rem !important; }
+
+/* Banner đầu trang */
+.hero {
+    display: flex; align-items: center; gap: 1.4rem;
+    background: linear-gradient(120deg, #BFDDF6 0%, #DCEEFB 55%, #F0F8FE 100%);
+    border: 2px solid var(--blue-500);
+    border-radius: 26px;
+    padding: 1.6rem 1.9rem;
+    margin-bottom: 1.4rem;
+    box-shadow: 0 10px 28px rgba(47,130,196,.22);
+}
+.hero .logo {
+    width: 96px; height: 96px; border-radius: 26px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.2rem;
+    background: linear-gradient(135deg, #4A9BD9 0%, #1F6FB5 100%);
+    box-shadow: 0 8px 18px rgba(31,111,181,.40), inset 0 0 0 4px rgba(255,255,255,.35);
+}
+.hero .team {
+    display: inline-block; padding: .2rem .9rem; margin-bottom: .4rem;
+    background: #0A0A0A; color: #FFFFFF !important; border-radius: 999px;
+    font-size: .95rem; font-weight: 800; letter-spacing: .12em;
+}
+.hero h1 { margin: 0; font-size: 2.6rem; line-height: 1.1; color: #0A0A0A !important; font-weight: 900; }
+.hero p  { margin: .45rem 0 0; color: #0A0A0A; font-size: 1.1rem; font-weight: 500; }
+.hero .chip {
+    display: inline-block; margin: .8rem .45rem 0 0; padding: .25rem .85rem;
+    background: #FFFFFF; border: 1.5px solid var(--blue-500);
+    border-radius: 999px; font-size: .88rem; font-weight: 600; color: #0A0A0A;
+}
+@media (max-width: 640px) {
+    .hero { flex-direction: column; text-align: center; }
+    .hero h1 { font-size: 2rem; }
+}
+
+/* Nút bấm */
+.stButton > button, .stDownloadButton > button {
+    background: #FFFFFF;
+    color: #0A0A0A;
+    border: 1.5px solid var(--blue-300);
+    border-radius: 12px;
+    transition: all .18s ease;
+    text-align: left;
+}
+.stButton > button:hover, .stDownloadButton > button:hover {
+    background: var(--blue-200);
+    color: #0A0A0A;
+    border-color: var(--blue-500);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(74,155,217,.28);
+}
+
+/* Thẻ gợi ý */
+[data-testid="stVerticalBlockBorderWrapper"] {
+    background: rgba(255,255,255,.75);
+    border: 1px solid var(--blue-200) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: 0 3px 12px rgba(74,155,217,.10);
+}
+
+/* Tin nhắn chat */
+[data-testid="stChatMessage"] {
+    background: #FFFFFF;
+    border: 1px solid var(--blue-200);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    margin-bottom: .8rem;
+    box-shadow: 0 3px 12px rgba(74,155,217,.08);
+}
+/* Tin nhắn của người dùng: xanh nhạt hơn */
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+    background: var(--blue-100);
+    border-color: var(--blue-300);
+}
+
+/* Expander (tool call) */
+[data-testid="stExpander"] {
+    background: var(--blue-50);
+    border: 1px solid var(--blue-200);
+    border-radius: 12px;
+}
+[data-testid="stExpander"] summary { color: #0A0A0A; font-weight: 600; }
+
+/* Ô nhập chat */
+[data-testid="stChatInput"] {
+    border: 1.5px solid var(--blue-300);
+    border-radius: 18px;
+    background: #FFFFFF;
+    box-shadow: 0 4px 16px rgba(74,155,217,.15);
+}
+[data-testid="stChatInput"]:focus-within { border-color: var(--blue-500); }
+
+/* Code block */
+pre, [data-testid="stCode"] { border-radius: 10px !important; }
+
+/* Thay thế config.toml: màu chủ đạo, chữ, spinner, link */
+html, body, [data-testid="stAppViewContainer"], .stMarkdown, p, li, label, span {
+    color: var(--ink);
+}
+a { color: var(--blue-600) !important; }
+.stSpinner > div > div { border-top-color: var(--blue-500) !important; }
+hr { border-color: var(--blue-200) !important; }
+[data-testid="stSidebar"] .stButton > button[kind="secondary"] { font-size: .88rem; }
+
+/* Thanh cuộn nhẹ nhàng */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--blue-300); border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+</style>
+"""
+
+
+def inject_theme() -> None:
+    st.markdown(THEME_CSS, unsafe_allow_html=True)
+
 
 @st.cache_resource
 def load_agent_config() -> dict[str, Any]:
@@ -157,37 +329,91 @@ def run_turn(cfg: dict[str, Any], user_text: str) -> dict[str, Any]:
     return turn
 
 
+def render_hero(cfg: dict[str, Any]) -> None:
+    st.markdown(
+        f"""
+        <div class="hero">
+            <div class="logo">🔎</div>
+            <div>
+            <span class="team">NHÓM D2HL</span>
+            <h1>Research Agent</h1>
+            <p>Tìm kiếm, đọc và kiểm tra thông tin từ nhiều nguồn trong một cuộc trò chuyện.</p>
+            <span class="chip">🤖 {cfg['model']}</span>
+            <span class="chip">🛠️ {len(cfg['declarations'])} công cụ</span>
+            <span class="chip">🏷️ {VERSION_LABEL}</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def main() -> None:
     st.set_page_config(page_title="Research Agent — Nhóm D2HL", page_icon="🔎", layout="wide")
+    inject_theme()
     cfg = load_agent_config()
     if "history" not in st.session_state:
         reset_session(cfg)
 
     with st.sidebar:
-        st.header("Research Agent")
-        st.caption(f"Provider `{PROVIDER}` · model `{cfg['model']}`")
-        st.caption(f"Artifact `{cfg['artifact_version'].artifact_version}`")
-        if st.button("🔄 Cuộc trò chuyện mới", use_container_width=True):
+        st.markdown(
+            """
+            <div class="side-brand">
+                <div class="logo">🔎</div>
+                <div>
+                    <div class="name">Nhóm D2HL</div>
+                    <div class="sub">RESEARCH AGENT</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.caption("Trợ lý nghiên cứu thông tin và nguồn tin.")
+        st.markdown(f"**Model**  \n`{PROVIDER} · {cfg['model']}`")
+        st.markdown(f"**Phiên bản**  \n`{cfg['artifact_version'].artifact_version}`")
+        if st.button("Cuộc trò chuyện mới", icon=":material/add_comment:", width="stretch"):
             reset_session(cfg)
             st.rerun()
 
-        st.subheader("Câu hỏi mẫu")
-        for query in SAMPLE_QUERIES:
-            if st.button(query, key=f"sample-{query}", use_container_width=True):
+        st.divider()
+        st.subheader("Bắt đầu nhanh")
+        for index, query in enumerate(SAMPLE_QUERIES):
+            if st.button(query, key=f"sample-{index}", width="stretch"):
                 st.session_state.pending_query = query
                 st.rerun()
 
-        st.subheader("Tool")
-        for decl in cfg["declarations"]:
-            first_sentence = decl.get("description", "").split(". ")[0]
-            st.markdown(f"{TOOL_ICONS.get(decl['name'], '🔧')} **{decl['name']}** — {first_sentence}")
+        with st.expander(f"Công cụ ({len(cfg['declarations'])})", expanded=False):
+            for decl in cfg["declarations"]:
+                first_sentence = decl.get("description", "").split(". ")[0]
+                st.markdown(f"{TOOL_ICONS.get(decl['name'], '🔧')} **{decl['name']}**  \n{first_sentence}")
 
         st.divider()
-        st.caption(f"Transcript: `{st.session_state.transcript_path.relative_to(ROOT)}`")
+        st.caption("Transcript của phiên hiện tại")
+        st.code(str(st.session_state.transcript_path.relative_to(ROOT)), language=None)
+        st.download_button(
+            "Tải transcript JSON",
+            data=json.dumps(st.session_state.transcript, ensure_ascii=False, indent=2),
+            file_name=f"{st.session_state.transcript['transcript_id']}.json",
+            mime="application/json",
+            icon=":material/download:",
+            width="stretch",
+        )
 
-    st.title("🔎 Research Agent")
-    st.caption("Tìm tin theo từ khóa hoặc tài khoản, đọc URL, tra paper arXiv và policy công ty, "
-               "gửi bản tin lên Telegram sau khi bạn xác nhận. Mỗi tool agent gọi được hiển thị bên dưới câu trả lời.")
+    render_hero(cfg)
+
+    if not st.session_state.display:
+        st.subheader("Bạn muốn nghiên cứu điều gì?")
+        st.write("Chọn một gợi ý để bắt đầu, hoặc nhập câu hỏi riêng ở ô chat phía dưới.")
+        for row_start in range(0, len(SAMPLE_QUERIES), 2):
+            left, right = st.columns(2)
+            for column, query in zip((left, right), SAMPLE_QUERIES[row_start:row_start + 2]):
+                with column:
+                    with st.container(border=True):
+                        st.markdown(f"{TOOL_ICONS.get('lookup', '🔎')} **Gợi ý nghiên cứu**")
+                        st.write(query)
+                        if st.button("Dùng câu hỏi này", key=f"welcome-{row_start}-{query}", icon=":material/arrow_forward:", width="stretch"):
+                            st.session_state.pending_query = query
+                            st.rerun()
 
     for item in st.session_state.display:
         with st.chat_message(item["role"]):
@@ -197,8 +423,9 @@ def main() -> None:
             if item.get("status") == "waiting_for_user":
                 st.caption("⏳ Agent đang chờ bạn trả lời câu hỏi trên.")
 
-    typed = st.chat_input("Hỏi agent… (ví dụ: Tin AI tuần này)")
-    user_text = typed or st.session_state.pop("pending_query", None)
+    typed = st.chat_input("Hỏi về tin tức, mạng xã hội, paper hoặc policy…")
+    pending = st.session_state.pop("pending_query", None)
+    user_text = typed or pending
     if not user_text:
         return
 
@@ -207,7 +434,7 @@ def main() -> None:
         st.markdown(user_text)
 
     with st.chat_message("assistant"):
-        with st.spinner("Agent đang chọn tool và chạy…"):
+        with st.spinner("Đang tìm kiếm và tổng hợp thông tin…"):
             turn = run_turn(cfg, user_text)
         render_tool_events(turn.get("tool_events", []))
         st.markdown(turn["assistant_text"] or "_(không có câu trả lời)_")
