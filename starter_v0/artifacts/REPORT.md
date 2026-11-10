@@ -223,3 +223,31 @@ Lỗi đặc thù của model nhỏ (đếm từ run JSON):
 - Cái gì giúp model nhỏ gọi tool đúng hơn nhất? Bằng chứng?
 - Bản prompt tối ưu cho local chạy trên model cloud thì sao?
 - Khi nào nhóm sẽ chọn model local thay vì cloud cho agent này?
+
+## B8. Version 7 — sửa R12 và yêu cầu truyền rõ argument
+
+### Mục tiêu
+
+v7 xử lý hai vấn đề đã ghi nhận ở các version trước: R12 đôi lúc hỏi `clarify` với `response_type="text"` khi nội dung gửi chưa rõ, dù yêu cầu gửi phải được xác nhận bằng `yes_no`; và một số case group bị chấm sai argument vì model bỏ qua giá trị mặc định như `search_type="Latest"`.
+
+### Thay đổi
+
+- Chỉ cập nhật `system_prompt.md`; `tools.yaml` được giữ nguyên. Artifact version: `v7+p81f941c115ab+t0c075afe2417` (prompt hash `81f941c115ab`, tools hash `0c075afe2417`).
+- Nêu rõ rule xác nhận gửi có ưu tiên hơn rule hỏi thông tin còn thiếu: với mọi yêu cầu gửi/đăng, hành động đầu tiên là `clarify(response_type="yes_no")`, kể cả khi nội dung chưa được cung cấp; không gọi `send` trước khi người dùng xác nhận.
+- Bổ sung hướng dẫn truyền tường minh các argument có giá trị mặc định để kết quả khớp yêu cầu và eval.
+
+### Kết quả đánh giá
+
+| Suite | Kết quả | Ghi chú |
+| ----- | ------- | ------- |
+| Base | **20/20 (1.00)**; routing 1.00; argument 1.00; multi-turn 1.00 | R12 PASS: gọi `clarify` với `response_type="yes_no"`; chưa gọi `send`. |
+| Extension | **10/10 (1.00)**; routing 1.00; argument 1.00 | Không phát sinh regression trong suite extension. |
+| Group | **15/16 (0.9375)**; routing 1.00; argument 0.9375 | G04 còn FAIL do thiếu `search_type="Latest"` dù prompt yêu cầu truyền rõ argument mặc định. G11 PASS ở lần chạy này. |
+
+R12 được sửa trong lần chạy base v7 cuối cùng, và toàn bộ 20 case base đều PASS. Group vẫn còn một lỗi argument ở G04; do đó thay đổi giúp xử lý R12 mà không làm giảm routing, nhưng chưa loại bỏ hết lỗi bỏ qua default arguments.
+
+### Run files
+
+- Base cuối cùng: `runs/v7_B_base_openrouter_20261110T170742046687.json` (20/20). Lần chạy base đầu tiên `runs/v7_B_base_openrouter_20261110T170319114661.json` dùng prompt hash trước cập nhật và đạt 19/20.
+- Group: `runs/v7_B_group_openrouter_20261110T170827837804.json` (15/16).
+- Extension: `runs/v7_B_extension_openrouter_20261110T170941900488.json` (10/10).
