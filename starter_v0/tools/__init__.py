@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 from typing import Any
 
@@ -17,7 +18,23 @@ from .policy.tool import search_company_policy
 from .social_search.tool import search_tweets
 from .send.tool import send_telegram
 from .lookup.tool import web_search
-from .tool_new.tool import dedupe_items
+
+
+def _load_tool_file(folder: str, attr: str):
+    # Folders like dedupe(tool_new) are not valid Python package names.
+    path = Path(__file__).resolve().parent / folder / "tool.py"
+    spec = importlib.util.spec_from_file_location(
+        f"{__package__}.{folder.replace('(', '_').replace(')', '')}.tool",
+        path,
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return getattr(module, attr)
+
+
+dedupe_items = _load_tool_file("dedupe(tool_new)", "dedupe_items")
+keep_topk = _load_tool_file("TopK(tool_new)", "keep_topk")
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -37,6 +54,7 @@ TOOL_FUNCTIONS = {
     "papers": arxiv_search,
     "paper_text": get_arxiv_paper_text,
     "tool_new": dedupe_items,
+    "topk": keep_topk,
 }
 
 

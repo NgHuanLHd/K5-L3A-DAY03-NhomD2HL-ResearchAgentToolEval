@@ -11,6 +11,14 @@
       "failure_type": "wrong_tool",
       "expect": {"tool_calls": [{"name": "tool_new", "args": {"key": "url"}}]},
       "metadata": {"what_it_tests": "Đã có item và user bảo bỏ trùng URL → tool_new(key=url), không lookup hay format."}
+    },
+    {
+      "id": "G02_topk_keep_three",
+      "phase": "B",
+      "query": "Chỉ giữ 3 tin có score cao nhất, bỏ còn lại.",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "topk", "args": {"n": 3}}]},
+      "metadata": {"what_it_tests": "Đã có item và user bảo giữ top 3 theo điểm → topk(n=3), không lookup, tool_new, hay format."}
     }
   ]
 }

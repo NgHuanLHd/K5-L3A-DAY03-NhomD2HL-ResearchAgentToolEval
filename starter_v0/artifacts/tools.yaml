@@ -137,3 +137,17 @@ tools:
             type: object
         key: {type: string, enum: [url, title], default: "url", description: "url when the user says trùng link / trùng nguồn / trùng URL. title when they say trùng tiêu đề. Otherwise url."}
       required: [items]
+
+  - name: topk
+    description: "Keep the n highest-score items already collected by other tools. Does not search, fetch, or drop duplicates. USE WHEN: the user already has results and asks for top N, N tin điểm cao nhất, chỉ giữ N bài, rút gọn list theo score. DO NOT USE WHEN: no items have been collected yet (search first), the user wants to drop duplicate URLs/titles (use tool_new), or they want a markdown digest (use format)."
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          default: []
+          description: "Items already returned by lookup, social_search, timeline, or fetch. Pass them through unchanged."
+          items:
+            type: object
+        n: {type: integer, default: 3, description: "How many items to keep. '3 tin hàng đầu' / 'top 3' -> 3; '5 bài điểm cao nhất' -> 5. Must be >= 1."}
+      required: [items]

@@ -131,3 +131,34 @@ def test_tool_new_bad_items_returns_error_dict() -> None:
     result = tool_new_fn(items="not-a-list", key="url")
     assert result["error"] == "TypeError"
     assert "items" in result["message"]
+
+
+# ---------------- topk (TopK(tool_new)) ----------------
+
+topk_fn = TOOL_FUNCTIONS["topk"]
+
+
+def test_topk_keeps_highest_scores_in_score_order() -> None:
+    items = [
+        {"title": "low", "score": 0.1},
+        {"title": "high", "score": 0.9},
+        {"title": "mid", "score": 0.5},
+        {"title": "high2", "score": 0.8},
+        {"title": "low2", "score": 0.2},
+    ]
+    result = topk_fn(items=items, n=3)
+    assert result["kept_count"] == 3
+    assert result["removed_count"] == 2
+    assert [item["title"] for item in result["items"]] == ["high", "high2", "mid"]
+
+
+def test_topk_rejects_n_below_one() -> None:
+    result = topk_fn(items=[{"title": "A", "score": 1}], n=0)
+    assert result["error"] == "ValueError"
+    assert "n" in result["message"]
+
+
+def test_topk_bad_items_returns_error_dict() -> None:
+    result = topk_fn(items="not-a-list", n=3)
+    assert result["error"] == "TypeError"
+    assert "items" in result["message"]

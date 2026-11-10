@@ -1,0 +1,29 @@
+{
+  "transcript_id": "ui_v3_openrouter_20261110T135856455483",
+  "version": "v3",
+  "artifact_version": "v3+peb1c8179815b+t96acb6c95ee7",
+  "prompt_hash": "eb1c8179815bd79d34de7d326420bb99b3072e6e8ae96464c02d4411f905fc68",
+  "tools_hash": "96acb6c95ee7b9231bff01e5ef12566e960e29eac04815a397a1413c9b8ee4d6",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "E:\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "E:\\K5-L3A-DAY03-NhomD2HL-Prompt-Function-Calling-Tool-Design-MCP\\starter_v0\\artifacts\\tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "interface": "streamlit",
+  "created_at": "2026-11-10T13:58:56",
+  "updated_at": "2026-11-10T13:58:59",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T13:58:59",
+      "user": "hello",
+      "status": "provider_error",
+      "assistant_text": "Lỗi khi gọi model: RuntimeError: Install live provider dependency first: pip install openai",
+      "rounds": [],
+      "tool_events": [],
+      "error": "RuntimeError: Install live provider dependency first: pip install openai",
+      "ended_at": "2026-11-10T13:58:59"
+    }
+  ]
+}

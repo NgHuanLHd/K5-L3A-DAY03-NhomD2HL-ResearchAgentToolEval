@@ -15,6 +15,35 @@ from typing import Any
 
 import streamlit as st
 
+# Streamlit 1.67 unpacks leftover chat_input widget state as a str (especially
+# after a sidebar button + rerun). ChatInputSerde still expects a protobuf
+# message with HasField("data") and crashes the page before the script runs.
+def _patch_chat_input_serde() -> None:
+    try:
+        from streamlit.elements.widgets.chat import ChatInputSerde
+    except ImportError:
+        return
+    orig = ChatInputSerde.deserialize
+    if getattr(orig, "_d2hl_patched", False):
+        return
+
+    def deserialize(self, ui_value, *args, **kwargs):  # type: ignore[no-untyped-def]
+        if ui_value is None:
+            return None
+        if isinstance(ui_value, str):
+            return ui_value or None
+        try:
+            return orig(self, ui_value, *args, **kwargs)
+        except AttributeError:
+            data = getattr(ui_value, "data", None)
+            return data or None
+
+    deserialize._d2hl_patched = True  # type: ignore[attr-defined]
+    ChatInputSerde.deserialize = deserialize  # type: ignore[method-assign]
+
+
+_patch_chat_input_serde()
+
 # chat.py prints tool calls with emoji; Windows consoles default to cp1252.
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -51,12 +80,13 @@ SAMPLE_QUERIES = [
     "Theo policy công ty, tweet viral có được coi là fact đã xác nhận không?",
     "Tóm tắt 5 tweet mới nhất giúp mình",
     "Đăng bản tin này lên Telegram giúp mình",
+    "Chỉ giữ 3 tin có score cao nhất, bỏ còn lại.",
 ]
 
 TOOL_ICONS = {
     "clarify": "❓", "timeline": "👤", "social_search": "🐦", "lookup": "🔎",
     "fetch": "📄", "format": "📝", "send": "📤", "policy": "📘",
-    "papers": "📚", "paper_text": "📑",
+    "papers": "📚", "paper_text": "📑", "tool_new": "🧹", "topk": "🏆",
 }
 
 
@@ -100,7 +130,12 @@ def new_transcript(cfg: dict[str, Any]) -> tuple[dict[str, Any], Any]:
 def reset_session(cfg: dict[str, Any]) -> None:
     st.session_state.history = []      # model-facing history (user/assistant text)
     st.session_state.display = []      # UI-facing messages incl. tool events
+    st.session_state.pop("pending_query", None)
     st.session_state.transcript, st.session_state.transcript_path = new_transcript(cfg)
+
+
+def queue_sample_query(query: str) -> None:
+    st.session_state.pending_query = query
 
 
 def short_json(value: Any, max_chars: int = 4000) -> str:
@@ -168,13 +203,16 @@ def main() -> None:
         st.caption(f"Artifact `{cfg['artifact_version'].artifact_version}`")
         if st.button("🔄 Cuộc trò chuyện mới", use_container_width=True):
             reset_session(cfg)
-            st.rerun()
 
         st.subheader("Câu hỏi mẫu")
         for query in SAMPLE_QUERIES:
-            if st.button(query, key=f"sample-{query}", use_container_width=True):
-                st.session_state.pending_query = query
-                st.rerun()
+            st.button(
+                query,
+                key=f"sample-{query}",
+                use_container_width=True,
+                on_click=queue_sample_query,
+                args=(query,),
+            )
 
         st.subheader("Tool")
         for decl in cfg["declarations"]:
